@@ -6,6 +6,7 @@ module RPKI.Parse.Parse (
     module RPKI.Parse.Internal.CRL,
     module RPKI.Parse.Internal.MFT,
     module RPKI.Parse.Internal.ROA,
+    module RPKI.Parse.Internal.ASPA,
     module RPKI.Parse.Internal.SignedObject,
     module RPKI.Parse.Internal.GBR,
     readObject,
@@ -26,6 +27,7 @@ import           RPKI.Parse.Internal.Common
 import           RPKI.Parse.Internal.CRL
 import           RPKI.Parse.Internal.MFT
 import           RPKI.Parse.Internal.ROA
+import           RPKI.Parse.Internal.ASPA
 import           RPKI.Parse.Internal.GBR
 import           RPKI.Parse.Internal.SignedObject
 
@@ -49,10 +51,11 @@ readObject objectURL content = do
         ".cer" -> parse_ parseResourceCertificate CerRO content            
         ".mft" -> parse_ parseMft MftRO content
         ".roa" -> parse_ parseRoa RoaRO content                    
+        ".asa" -> parse_ parseAsa AsaRO content
         ".crl" -> parse_ parseCrl CrlRO content            
         ".gbr" -> parse_ parseGbr GbrRO content            
         _      -> Left $ fmtErr $ "Unknown object type: " <> show u
         where
             parse_ parse constructor bs = 
                 constructor <$> parse bs
-                
+

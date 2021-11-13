@@ -22,25 +22,25 @@ import RPKI.Parse.Internal.SignedObject
 
 -- | Parse ASPA, https://datatracker.ietf.org/doc/html/draft-ietf-sidrops-aspa-profile
 --
-parseAspa :: BS.ByteString -> ParseResult AspaObject
-parseAspa bs = do
+parseAsa :: BS.ByteString -> ParseResult AsaObject
+parseAsa bs = do
     asns      <- first (fmtErr . show) $ decodeASN1' BER bs  
-    signedAspa <- first fmtErr $ runParseASN1 (parseSignedObject $ parseSignedContent parseAspas') asns
-    hash' <- getMetaFromSigned signedAspa bs
-    pure $ newCMSObject hash' (CMS signedAspa)
+    signedAsa <- first fmtErr $ runParseASN1 (parseSignedObject $ parseSignedContent parseAsas') asns
+    hash' <- getMetaFromSigned signedAsa bs
+    pure $ newCMSObject hash' (CMS signedAsa)
     where     
-        parseAspas' = onNextContainer Sequence $ do
+        parseAsas' = onNextContainer Sequence $ do
             -- TODO Fix it so that it would work with present attestation version
             asId <- getInteger (pure . fromInteger) "Wrong ASID"
             mconcat <$> onNextContainer Sequence (getMany $
                 onNextContainer Sequence $ 
                 getAddressFamily "Expected an address family here" >>= \case 
-                    Right Ipv4F -> getAspa asId Ipv4F
-                    Right Ipv6F -> getAspa asId Ipv6F
+                    Right Ipv4F -> getAsa asId Ipv4F
+                    Right Ipv6F -> getAsa asId Ipv6F
                     Left af     -> throwParseError $ "Unsupported address family: " ++ show af)
 
-        getAspa :: Int -> AddrFamily -> ParseASN1 [Vrp]
-        getAspa asId addressFamily = onNextContainer Sequence $ getMany $
+        getAsa :: Int -> AddrFamily -> ParseASN1 [Vrp]
+        getAsa asId addressFamily = onNextContainer Sequence $ getMany $
             getNextContainerMaybe Sequence >>= \case       
                 Just [BitString (BitArray nzBits bs')] ->
                     makeVrp asId bs' nzBits nzBits addressFamily

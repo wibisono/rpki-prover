@@ -218,10 +218,10 @@ data CMSBasedObject a = CMSBasedObject {
     deriving stock (Show, Eq, Generic)
     deriving anyclass Serialise
 
-type MftObject  = CMSBasedObject Manifest
-type RoaObject  = CMSBasedObject [Vrp]
-type AspaObject = CMSBasedObject [Vrp]
-type GbrObject  = CMSBasedObject Gbr
+type MftObject = CMSBasedObject Manifest
+type RoaObject = CMSBasedObject [Vrp]
+type AsaObject = CMSBasedObject [Vrp]
+type GbrObject = CMSBasedObject Gbr
 
 data EECerObject = EECerObject {
         ski         :: {-# UNPACK #-} SKI,
@@ -232,12 +232,12 @@ data EECerObject = EECerObject {
     deriving anyclass Serialise   
 
     
-data RpkiObject = CerRO  CerObject
-                | MftRO  MftObject
-                | RoaRO  RoaObject
-                | AspaRO AspaObject
-                | GbrRO  GbrObject
-                | CrlRO  CrlObject
+data RpkiObject = CerRO CerObject
+                | MftRO MftObject
+                | RoaRO RoaObject
+                | AsaRO AsaObject
+                | GbrRO GbrObject
+                | CrlRO CrlObject
     deriving stock (Show, Eq, Generic)
     deriving anyclass Serialise
 
@@ -280,6 +280,7 @@ instance WithAKI RpkiObject where
     getAKI (CerRO c) = getAKI c
     getAKI (MftRO c) = getAKI c
     getAKI (RoaRO c) = getAKI c
+    getAKI (AsaRO c) = getAKI c
     getAKI (GbrRO c) = getAKI c
     getAKI (CrlRO c) = getAKI c
 
@@ -287,6 +288,7 @@ instance WithHash RpkiObject where
     getHash (CerRO c) = getHash c
     getHash (MftRO c) = getHash c
     getHash (RoaRO c) = getHash c
+    getHash (AsaRO c) = getHash c
     getHash (GbrRO c) = getHash c
     getHash (CrlRO c) = getHash c
 
@@ -330,6 +332,20 @@ data Vrp = Vrp
     {-# UNPACK #-} !ASN 
     !IpPrefix 
     {-# UNPACK #-} !PrefixLength
+    deriving stock (Show, Eq, Ord, Generic)
+    deriving anyclass Serialise
+
+data Asa = Asa {
+        customerAsn :: ASN,
+        providerAsnSet :: [ProviderAsn]
+    }
+    deriving stock (Show, Eq, Ord, Generic)
+    deriving anyclass Serialise
+
+data ProviderAsn = ProviderAsn {
+        provider  :: ASN,
+        afi_limit :: Maybe AddrFamily
+    }
     deriving stock (Show, Eq, Ord, Generic)
     deriving anyclass Serialise
 

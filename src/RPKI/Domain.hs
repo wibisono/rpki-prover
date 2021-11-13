@@ -218,9 +218,10 @@ data CMSBasedObject a = CMSBasedObject {
     deriving stock (Show, Eq, Generic)
     deriving anyclass Serialise
 
-type MftObject = CMSBasedObject Manifest
-type RoaObject = CMSBasedObject [Vrp]
-type GbrObject = CMSBasedObject Gbr
+type MftObject  = CMSBasedObject Manifest
+type RoaObject  = CMSBasedObject [Vrp]
+type AspaObject = CMSBasedObject [Vrp]
+type GbrObject  = CMSBasedObject Gbr
 
 data EECerObject = EECerObject {
         ski         :: {-# UNPACK #-} SKI,
@@ -231,11 +232,12 @@ data EECerObject = EECerObject {
     deriving anyclass Serialise   
 
     
-data RpkiObject = CerRO CerObject 
-                | MftRO MftObject
-                | RoaRO RoaObject
-                | GbrRO GbrObject
-                | CrlRO CrlObject
+data RpkiObject = CerRO  CerObject
+                | MftRO  MftObject
+                | RoaRO  RoaObject
+                | AspaRO AspaObject
+                | GbrRO  GbrObject
+                | CrlRO  CrlObject
     deriving stock (Show, Eq, Generic)
     deriving anyclass Serialise
 
